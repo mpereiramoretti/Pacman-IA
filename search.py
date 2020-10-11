@@ -85,6 +85,41 @@ def getPath(problem, initialNode, finalNode):
     path.reverse()
     return path
 
+def generalSearch(problem, boundaryType=util.Stack, evaluationFct=None):
+    boundary = boundaryType()
+    initialNode = (problem.getStartState(), None, 0, None)
+    if evaluationFct:
+        boundary.push(initialNode, evaluationFct(problem, initialNode[0]))
+    else:
+        boundary.push(initialNode)
+    finalNode = None
+    visitedStates = []
+
+    while True:
+        if (boundary.isEmpty()):
+            raise Exception('No path found!')
+        node = boundary.pop()
+
+        currentState = node[0]
+        visitedStates.append(currentState)
+        if (problem.isGoalState(currentState)):
+            finalNode = node
+            break
+        successors = problem.getSuccessors(currentState)
+        for successor in successors:
+            if successor[0] not in visitedStates:
+                parentNode = node
+                successorNode = (successor[0], successor[1], successor[2], parentNode)
+                if evaluationFct:
+                    boundary.push(successorNode, evaluationFct(problem, successor[0]))
+                else:
+                    boundary.push(successorNode)
+    
+    print("Reached final node:", finalNode[0])
+    #print(finalNode)
+    path = getPath(problem, initialNode, finalNode)
+    return path
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -99,91 +134,18 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-
-    boundary = util.Stack()
-    initialNode = (problem.getStartState(), None, 0, None)
-    boundary.push(initialNode)
-    finalNode = None
-    visitedStates = []
-
-    while True:
-        if (boundary.isEmpty()):
-            raise Exception('No path found!')
-        node = boundary.pop()
-
-        currentState = node[0]
-        visitedStates.append(currentState)
-        if (problem.isGoalState(currentState)):
-            finalNode = node
-            break
-        successors = problem.getSuccessors(currentState)
-        for successor in successors:
-            if successor[0] not in visitedStates:
-                parentNode = node
-                boundary.push((successor[0], successor[1], successor[2], parentNode))
-    
-    print("Reached final node:", finalNode[0])
-    #print(finalNode)
-    path = getPath(problem, initialNode, finalNode)
-    return path
+    return generalSearch(problem)
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    boundary = util.Queue()
-    initialNode = (problem.getStartState(), None, 0, None)
-    boundary.push(initialNode)
-    finalNode = None
-    visitedStates = []
-
-    while True:
-        if (boundary.isEmpty()):
-            raise Exception('No path found!')
-        node = boundary.pop()
-
-        currentState = node[0]
-        visitedStates.append(currentState)
-        if (problem.isGoalState(currentState)):
-            finalNode = node
-            break
-        successors = problem.getSuccessors(currentState)
-        for successor in successors:
-            if successor[0] not in visitedStates:
-                parentNode = node
-                boundary.push((successor[0], successor[1], successor[2], parentNode))
-    
-    print("Reached final node:", finalNode[0])
-    #print(finalNode)
-    path = getPath(problem, initialNode, finalNode)
-    return path
+    return generalSearch(problem, boundaryType=util.Queue)
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    boundary = util.PriorityQueue()
-    initialNode = (problem.getStartState(), None, 0, None)
-    boundary.push(initialNode, problem.costFn(initialNode[0]))
-    finalNode = None
-    visitedStates = []
+    def ucsEvaluationFunction(problem, state):
+        return problem.costFn(state)
 
-    while True:
-        if (boundary.isEmpty()):
-            raise Exception('No path found!')
-        node = boundary.pop()
-
-        currentState = node[0]
-        visitedStates.append(currentState)
-        if (problem.isGoalState(currentState)):
-            finalNode = node
-            break
-        successors = problem.getSuccessors(currentState)
-        for successor in successors:
-            if successor[0] not in visitedStates:
-                parentNode = node
-                boundary.push((successor[0], successor[1], successor[2], parentNode), problem.costFn(successor[0]))
-    
-    print("Reached final node:", finalNode[0])
-    #print(finalNode)
-    path = getPath(problem, initialNode, finalNode)
-    return path
+    return generalSearch(problem, boundaryType=util.PriorityQueue, evaluationFct=ucsEvaluationFunction)
 
 def nullHeuristic(state, problem=None):
     """
@@ -196,33 +158,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     # python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic
     # python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar
-    boundary = util.PriorityQueue()
-    initialNode = (problem.getStartState(), None, 0, None)
-    boundary.push(initialNode, problem.costFn(initialNode[0]) + heuristic(initialNode[0], problem))
-    finalNode = None
-    visitedStates = []
-
-    while True:
-        if (boundary.isEmpty()):
-            raise Exception('No path found!')
-        node = boundary.pop()
-
-        currentState = node[0]
-        visitedStates.append(currentState)
-        if (problem.isGoalState(currentState)):
-            finalNode = node
-            break
-        successors = problem.getSuccessors(currentState)
-        for successor in successors:
-            if successor[0] not in visitedStates:
-                parentNode = node
-                boundary.push((successor[0], successor[1], successor[2], parentNode), \
-                               problem.costFn(successor[0]) + heuristic(successor[0], problem))
+    def astarEvaluationFunction(problem, state):
+        return problem.costFn(state) + heuristic(state, problem)
     
-    print("Reached final node:", finalNode[0])
-    #print(finalNode)
-    path = getPath(problem, initialNode, finalNode)
-    return path
+    return generalSearch(problem, boundaryType=util.PriorityQueue, evaluationFct=astarEvaluationFunction)
 
 
 # Abbreviations
