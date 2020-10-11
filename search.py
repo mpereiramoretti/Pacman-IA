@@ -73,7 +73,7 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
-def getPath(problem, initialNode, visitedNodes, finalNode):
+def getPath(problem, initialNode, finalNode):
     path = []
     currentNode = finalNode
     parentNode = currentNode[3]
@@ -123,8 +123,8 @@ def depthFirstSearch(problem):
                 boundary.push((successor[0], successor[1], successor[2], parentNode))
     
     print("Reached final node:", finalNode[0])
-    print(finalNode)
-    path = getPath(problem, initialNode, visitedStates, finalNode)
+    #print(finalNode)
+    path = getPath(problem, initialNode, finalNode)
     return path
 
 def breadthFirstSearch(problem):
@@ -152,14 +152,38 @@ def breadthFirstSearch(problem):
                 boundary.push((successor[0], successor[1], successor[2], parentNode))
     
     print("Reached final node:", finalNode[0])
-    print(finalNode)
-    path = getPath(problem, initialNode, visitedStates, finalNode)
+    #print(finalNode)
+    path = getPath(problem, initialNode, finalNode)
     return path
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    boundary = util.PriorityQueue()
+    initialNode = (problem.getStartState(), None, 0, None)
+    boundary.push(initialNode, problem.costFn(initialNode[0]))
+    finalNode = None
+    visitedStates = []
+
+    while True:
+        if (boundary.isEmpty()):
+            raise Exception('No path found!')
+        node = boundary.pop()
+
+        currentState = node[0]
+        visitedStates.append(currentState)
+        if (problem.isGoalState(currentState)):
+            finalNode = node
+            break
+        successors = problem.getSuccessors(currentState)
+        for successor in successors:
+            if successor[0] not in visitedStates:
+                parentNode = node
+                boundary.push((successor[0], successor[1], successor[2], parentNode), problem.costFn(successor[0]))
+    
+    print("Reached final node:", finalNode[0])
+    #print(finalNode)
+    path = getPath(problem, initialNode, finalNode)
+    return path
 
 def nullHeuristic(state, problem=None):
     """
