@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+import game
 
 class SearchProblem:
     """
@@ -81,13 +82,59 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-
+    
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    boundary = util.Stack()
+    initialNode = (problem.getStartState(), None, 0)
+    boundary.push(initialNode)
+    finalNode = None
+    visitedNodes = []
+
+    while True:
+        if (boundary.isEmpty()):
+            raise Exception('No path found!')
+        node = boundary.pop()
+
+        visitedNodes.append(node)
+        currentState = node[0]
+        if (problem.isGoalState(currentState)):
+            finalNode = node
+            break
+        successors = problem.getSuccessors(currentState)
+        for successor in successors:
+            if successor not in visitedNodes:
+                boundary.push(successor)
+    
+    print("Reached final node:", finalNode[0])
+    path = getPath(problem, problem.getStartState(), visitedNodes, finalNode)
+    return path
+
+def getPath(problem, startState, visitedNodes, finalNode):
+    path = []
+    currentNode = finalNode
+    currentState = finalNode[0]
+    while (startState != currentState):
+        action = currentNode[1]
+        path.append(action)
+
+        x = currentState[0]
+        y = currentState[1]
+        if (action == game.Directions.NORTH):
+            currentState = (x, y - 1)
+        elif (action == game.Directions.SOUTH):
+            currentState = (x, y + 1)
+        elif (action == game.Directions.EAST):
+            currentState = (x - 1, y)
+        else:
+            currentState = (x + 1, y)
+        currentNode = next(filter(lambda x: x[0] == currentState, visitedNodes))
+        currentState = currentNode[0]
+    path.reverse()
+    return path
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
