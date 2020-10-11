@@ -73,6 +73,18 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def getPath(problem, initialNode, visitedNodes, finalNode):
+    path = []
+    currentNode = finalNode
+    parentNode = currentNode[3]
+    while (parentNode != None):
+        action = currentNode[1]
+        path.append(action)
+        currentNode = parentNode
+        parentNode = currentNode[3]
+    path.reverse()
+    return path
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -89,57 +101,60 @@ def depthFirstSearch(problem):
     """
 
     boundary = util.Stack()
-    initialNode = (problem.getStartState(), None, 0)
+    initialNode = (problem.getStartState(), None, 0, None)
     boundary.push(initialNode)
     finalNode = None
-    visitedNodes = []
+    visitedStates = []
 
     while True:
         if (boundary.isEmpty()):
             raise Exception('No path found!')
         node = boundary.pop()
 
-        visitedNodes.append(node)
         currentState = node[0]
+        visitedStates.append(currentState)
         if (problem.isGoalState(currentState)):
             finalNode = node
             break
         successors = problem.getSuccessors(currentState)
         for successor in successors:
-            if successor not in visitedNodes:
-                boundary.push(successor)
+            if successor[0] not in visitedStates:
+                parentNode = node
+                boundary.push((successor[0], successor[1], successor[2], parentNode))
     
     print("Reached final node:", finalNode[0])
-    path = getPath(problem, problem.getStartState(), visitedNodes, finalNode)
-    return path
-
-def getPath(problem, startState, visitedNodes, finalNode):
-    path = []
-    currentNode = finalNode
-    currentState = finalNode[0]
-    while (startState != currentState):
-        action = currentNode[1]
-        path.append(action)
-
-        x = currentState[0]
-        y = currentState[1]
-        if (action == game.Directions.NORTH):
-            currentState = (x, y - 1)
-        elif (action == game.Directions.SOUTH):
-            currentState = (x, y + 1)
-        elif (action == game.Directions.EAST):
-            currentState = (x - 1, y)
-        else:
-            currentState = (x + 1, y)
-        currentNode = next(filter(lambda x: x[0] == currentState, visitedNodes))
-        currentState = currentNode[0]
-    path.reverse()
+    print(finalNode)
+    path = getPath(problem, initialNode, visitedStates, finalNode)
     return path
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    boundary = util.Queue()
+    initialNode = (problem.getStartState(), None, 0, None)
+    boundary.push(initialNode)
+    finalNode = None
+    visitedStates = []
+
+    while True:
+        if (boundary.isEmpty()):
+            raise Exception('No path found!')
+        node = boundary.pop()
+
+        currentState = node[0]
+        visitedStates.append(currentState)
+        if (problem.isGoalState(currentState)):
+            finalNode = node
+            break
+        successors = problem.getSuccessors(currentState)
+        for successor in successors:
+            if successor[0] not in visitedStates:
+                parentNode = node
+                boundary.push((successor[0], successor[1], successor[2], parentNode))
+    
+    print("Reached final node:", finalNode[0])
+    print(finalNode)
+    path = getPath(problem, initialNode, visitedStates, finalNode)
+    return path
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
