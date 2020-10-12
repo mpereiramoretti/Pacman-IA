@@ -273,7 +273,7 @@ class CornersProblem(search.SearchProblem):
     You must select a suitable state space and successor function
     """
 
-    def __init__(self, startingGameState):
+    def __init__(self, startingGameState, costFn = lambda x: 1):
         """
         Stores the walls, pacman's starting position and corners.
         """
@@ -287,22 +287,23 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
+        self.startingVisitedCorners = (False, False, False, False)
+        self.goal = (True, True, True, True)
+        self.costFn = costFn
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.startingPosition, self.corners, self.startingVisitedCorners)
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        visitedCorners = state[2]
+        return (visitedCorners == self.goal)
 
     def getSuccessors(self, state):
         """
@@ -324,7 +325,23 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            currentPosition = state[0]
+            visitedCorners = state[2]
+            x,y = currentPosition
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                nextPosition = (nextx, nexty)
+                if nextPosition in self.corners:
+                    idx = self.corners.index(nextPosition)
+                    c_11 = visitedCorners[0] or (idx == 0)
+                    c_1top = visitedCorners[1] or (idx == 1)
+                    c_right1 = visitedCorners[2] or (idx == 2)
+                    c_righttop = visitedCorners[3] or (idx == 3)
+                    visitedCorners = (c_11, c_1top, c_right1, c_righttop)
+                nextState = (nextPosition, self.corners, visitedCorners)
+                cost = self.costFn(nextState)
+                successors.append( (nextState, action, cost) )
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
