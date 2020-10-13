@@ -99,6 +99,9 @@ def generalSearch(problem, boundaryType=util.Stack, evaluationFct=None):
         if (boundary.isEmpty()):
             raise Exception('No path found!')
         node = boundary.pop()
+            
+        if (node[0] in visitedStates):
+            continue
 
         currentState = node[0]
         visitedStates.append(currentState)
@@ -107,16 +110,14 @@ def generalSearch(problem, boundaryType=util.Stack, evaluationFct=None):
             break
         successors = problem.getSuccessors(currentState)
         for successor in successors:
-            if successor[0] not in visitedStates:
-                parentNode = node
-                successorNode = (successor[0], successor[1], successor[2], parentNode)
-                if evaluationFct:
-                    boundary.push(successorNode, evaluationFct(problem, successor[0]))
-                else:
-                    boundary.push(successorNode)
+            parentNode = node
+            successorNode = (successor[0], successor[1], successor[2], parentNode)
+            if evaluationFct:
+                boundary.push(successorNode, evaluationFct(problem, successor[0]))
+            else:
+                boundary.push(successorNode)
     
     print("Reached final node:", finalNode[0])
-    #print(finalNode)
     path = getPath(problem, initialNode, finalNode)
     return path
 
