@@ -392,13 +392,13 @@ def cornersHeuristic(state, problem):
     for corner in nonVisitedCorners:
         distanceToNexterCorner = min(distanceToNexterCorner, util.manhattanDistance(currentPosition, corner))
 
-    greatestSideOfGrid = sorted([
+    smallestSideOfGrid = min([
         util.manhattanDistance(corners[0], corners[1]),
         util.manhattanDistance(corners[0], corners[2]),
         util.manhattanDistance(corners[0], corners[3])
-    ])[1]
+    ])
 
-    return distanceToNexterCorner + (len(nonVisitedCorners) - 1) * greatestSideOfGrid
+    return distanceToNexterCorner + (len(nonVisitedCorners) - 1) * smallestSideOfGrid
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
