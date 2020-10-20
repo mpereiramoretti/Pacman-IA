@@ -157,8 +157,7 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    # python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar,heuristic=manhattanHeuristic
-    # python pacman.py -l bigMaze -z .5 -p SearchAgent -a fn=astar
+    
     def astarEvaluationFunction(problem, state):
         return problem.costFn(state) + heuristic(state, problem)
     
