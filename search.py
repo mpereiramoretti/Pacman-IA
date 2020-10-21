@@ -116,8 +116,7 @@ def generalSearch(problem, boundaryType=util.Stack, evaluationFct=None):
                 boundary.push(successorNode, evaluationFct(problem, successor[0]))
             else:
                 boundary.push(successorNode)
-    
-    print("Reached final node:", finalNode[0])
+
     path = getPath(problem, initialNode, finalNode)
     return path
 
@@ -157,7 +156,7 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    
+
     def astarEvaluationFunction(problem, state):
         return problem.costFn(state) + heuristic(state, problem)
     

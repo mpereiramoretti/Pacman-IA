@@ -376,12 +376,6 @@ def cornersHeuristic(state, problem):
     #corners = problem.corners # These are the corner coordinates
     #walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    #distanceToNexterCorner = 999999
-    #for corner in nonVisitedCorners:
-    #    distanceToNexterCorner = min(distanceToNexterCorner, util.manhattanDistance(currentPosition, corner))
-
-    #distance = distanceToNexterCorner + qttNonVisitedCorners * 
-
     "*** YOUR CODE HERE ***"
     currentPosition = state[0]
     corners = state[1]
@@ -493,11 +487,33 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
+    
     foodCoords = foodGrid.asList()
+
+    farthestFoodDistance = 0
+    foodFarthest1 = None
+    foodFarthest2 = None
+    for coord1 in foodCoords:
+        for coord2 in foodCoords:
+            farthestFoodDistance = max(farthestFoodDistance, util.manhattanDistance(coord1, coord2))
+            foodFarthest1 = coord1
+            foodFarthest2 = coord2
+
+    if (foodFarthest1 != None and foodFarthest2 != None):
+        nexterFoodDistance = min(util.manhattanDistance(position, foodFarthest1), util.manhattanDistance(position, foodFarthest2))
+    else:
+        nexterFoodDistance = 0
+
+    return farthestFoodDistance + nexterFoodDistance
+    """
     maxDist = 0
     for foodCoord in foodCoords:
         maxDist = max(maxDist, util.manhattanDistance(position, foodCoord))
     return maxDist
+    """
+    """
+    return len(foodGrid.asList())
+    """
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
