@@ -289,6 +289,7 @@ class CornersProblem(search.SearchProblem):
         # in initializing the problem
         self.startingVisitedCorners = (False, False, False, False)
         self.goal = (True, True, True, True)
+        # adicionado ao cabeçalho da função
         self.costFn = costFn
 
     def getStartState(self):
@@ -332,6 +333,8 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             if not self.walls[nextx][nexty]:
                 nextPosition = (nextx, nexty)
+                # atualiza a tuple de corners visitados para os vizinhos gerados
+                # se o vizinho eh um corner, colocamos True na sua posicao na tuple
                 if nextPosition in self.corners:
                     idx = self.corners.index(nextPosition)
                     c_11 = visitedCorners[0] or (idx == 0)
@@ -382,10 +385,12 @@ def cornersHeuristic(state, problem):
     visitedCorners = state[2]
     nonVisitedCorners = list(set(corners)-set(visitedCorners))
 
+    # calcula a distancia ao corner mais proximo
     distanceToNexterCorner = 999999
     for corner in nonVisitedCorners:
         distanceToNexterCorner = min(distanceToNexterCorner, util.manhattanDistance(currentPosition, corner))
 
+    # calcula o lado do tabuleiro que tem a menor distancia (altura ou largura)
     smallestSideOfGrid = min([
         util.manhattanDistance(corners[0], corners[1]),
         util.manhattanDistance(corners[0], corners[2]),
@@ -487,18 +492,22 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
+    # return 0 # para testar nos labirintos testSearch, tinySearch e trickSearch com algoritmo UCS
     
     foodCoords = foodGrid.asList()
 
     farthestFoodDistance = 0
     foodFarthest1 = None
     foodFarthest2 = None
+
+    # Obtemos a maior distância entre duas comidas, e as comidas que estão a essa distância
     for coord1 in foodCoords:
         for coord2 in foodCoords:
             farthestFoodDistance = max(farthestFoodDistance, util.manhattanDistance(coord1, coord2))
             foodFarthest1 = coord1
             foodFarthest2 = coord2
 
+    # Obtemos a menor distância entre o Pacman e as duas comidas encontradas anteriormente
     if (foodFarthest1 != None and foodFarthest2 != None):
         closestFoodDistance = min(util.manhattanDistance(position, foodFarthest1), util.manhattanDistance(position, foodFarthest2))
     else:
@@ -544,6 +553,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
+        # UCS para buscar um caminho ateh uma coordenada com comida
         return search.astar(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):

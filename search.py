@@ -73,21 +73,26 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+# funcao que retorna o vetor de acoes necessarias para do no inicial atingir o no final
 def getPath(problem, initialNode, finalNode):
     path = []
     currentNode = finalNode
-    parentNode = currentNode[3]
-    while (parentNode != None):
-        action = currentNode[1]
+    parentNode = currentNode[3] # no pai
+    while (parentNode != None): # no inicial tem no pai None
+        action = currentNode[1] # action
         path.append(action)
+        # no parente vira o atual e voltamos no caminho
         currentNode = parentNode
         parentNode = currentNode[3]
     path.reverse()
     return path
 
+# funcao geral de busca
 def generalSearch(problem, boundaryType=util.Stack, evaluationFct=None):
     boundary = boundaryType()
     initialNode = (problem.getStartState(), None, 0, None)
+
+    # adicionamos o no inicial na fronteira
     if evaluationFct:
         boundary.push(initialNode, evaluationFct(problem, initialNode[0]))
     else:
@@ -99,7 +104,8 @@ def generalSearch(problem, boundaryType=util.Stack, evaluationFct=None):
         if (boundary.isEmpty()):
             raise Exception('No path found!')
         node = boundary.pop()
-            
+        
+        # evitar que no ja visitado seja expandido novamente
         if (node[0] in visitedStates):
             continue
 
@@ -111,29 +117,22 @@ def generalSearch(problem, boundaryType=util.Stack, evaluationFct=None):
         successors = problem.getSuccessors(currentState)
         for successor in successors:
             parentNode = node
+            # (estado, acao, custo, no pai) 
             successorNode = (successor[0], successor[1], successor[2], parentNode)
             if evaluationFct:
                 boundary.push(successorNode, evaluationFct(problem, successor[0]))
             else:
                 boundary.push(successorNode)
 
+    # reconstruimos o caminho
     path = getPath(problem, initialNode, finalNode)
     return path
 
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
-
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-    
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
+    # O generalSearch padrão faz um DFS
     return generalSearch(problem)
 
 def breadthFirstSearch(problem):
@@ -142,6 +141,7 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
+    # avaliacao no UCS eh o custo para chegar no no atual
     def ucsEvaluationFunction(problem, state):
         return problem.costFn(state)
 
@@ -156,7 +156,7 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-
+    # avaliacao no A* eh o custo para chegar no no atual mais a heuristica para chegar no objetivo
     def astarEvaluationFunction(problem, state):
         return problem.costFn(state) + heuristic(state, problem)
     
