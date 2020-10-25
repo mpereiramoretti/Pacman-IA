@@ -287,9 +287,12 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
+
+        # no inicio, nenhum corner foi visitado
         self.startingVisitedCorners = (False, False, False, False)
+        # objetivo: todos os corners visitados
         self.goal = (True, True, True, True)
-        # adicionado ao cabeçalho da função
+        # funcao de custo adicionada ao construtor
         self.costFn = costFn
 
     def getStartState(self):
@@ -303,7 +306,7 @@ class CornersProblem(search.SearchProblem):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        visitedCorners = state[2]
+        visitedCorners = state[2] # nos visitados
         return (visitedCorners == self.goal)
 
     def getSuccessors(self, state):
@@ -376,14 +379,12 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    #corners = problem.corners # These are the corner coordinates
-    #walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    currentPosition = state[0]
-    corners = state[1]
-    visitedCorners = state[2]
-    nonVisitedCorners = list(set(corners)-set(visitedCorners))
+    currentPosition = state[0] # posicao atual
+    corners = state[1] # posicao dos corners
+    visitedCorners = state[2] # corners visitados
+    nonVisitedCorners = list(set(corners)-set(visitedCorners)) # corners nao visitados
 
     # calcula a distancia ao corner mais proximo
     distanceToNexterCorner = 999999

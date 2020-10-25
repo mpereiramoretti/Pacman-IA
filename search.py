@@ -103,6 +103,7 @@ def generalSearch(problem, boundaryType=util.Stack, evaluationFct=None):
     while True:
         if (boundary.isEmpty()):
             raise Exception('No path found!')
+        # pegamos o proximo no
         node = boundary.pop()
         
         # evitar que no ja visitado seja expandido novamente
@@ -114,6 +115,7 @@ def generalSearch(problem, boundaryType=util.Stack, evaluationFct=None):
         if (problem.isGoalState(currentState)):
             finalNode = node
             break
+        # obtemos os sucessores e adicionamos na fronteira
         successors = problem.getSuccessors(currentState)
         for successor in successors:
             parentNode = node
@@ -137,6 +139,7 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
+    # BFS usa fila como fronteira
     return generalSearch(problem, boundaryType=util.Queue)
 
 def uniformCostSearch(problem):
