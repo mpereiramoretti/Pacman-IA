@@ -500,14 +500,14 @@ def foodHeuristic(state, problem):
     foodFarthest1 = None
     foodFarthest2 = None
 
-    # Obtemos a maior distância entre duas comidas, e as comidas que estão a essa distância
+    # Obtemos a maior distancia entre duas comidas, e as comidas que estao a essa distancia
     for coord1 in foodCoords:
         for coord2 in foodCoords:
             farthestFoodDistance = max(farthestFoodDistance, util.manhattanDistance(coord1, coord2))
             foodFarthest1 = coord1
             foodFarthest2 = coord2
 
-    # Obtemos a menor distância entre o Pacman e as duas comidas encontradas anteriormente
+    # Obtemos a menor distancia entre o Pacman e as duas comidas encontradas anteriormente
     if (foodFarthest1 != None and foodFarthest2 != None):
         closestFoodDistance = min(util.manhattanDistance(position, foodFarthest1), util.manhattanDistance(position, foodFarthest2))
     else:
